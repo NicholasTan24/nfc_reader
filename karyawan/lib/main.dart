@@ -22,6 +22,13 @@ class MainApp extends StatelessWidget {
 class MyHomePage extends StatelessWidget {
   const MyHomePage();
 
+  // ✨ Tambahkan fungsi ini
+  Future<List<Karyawan>> _readJsonData() async {
+    final String response = await rootBundle.loadString('assets/karyawan.json');
+    final List<dynamic> data = json.decode(response);
+    return data.map((json) => Karyawan.fromJson(json)).toList();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -30,7 +37,38 @@ class MyHomePage extends StatelessWidget {
         foregroundColor: Colors.white,
         title: const Text('Daftar Karyawan'),
       ),
-      body: Center(child: Text('Data karyawan akan ditampilkan di sini')),
+      // ✨ Ganti body dengan FutureBuilder
+      body: FutureBuilder(
+        future: _readJsonData(),
+        builder: (context, snapshot) {
+          if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          }
+          if (snapshot.hasData) {
+            return ListView.builder(
+              itemCount: snapshot.data!.length,
+              itemBuilder: (context, index) {
+                final karyawan = snapshot.data![index];
+                return ListTile(
+                  title: Text(karyawan.nama),
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Umur: ${karyawan.umur} tahun'),
+                      Text(
+                        'Alamat: ${karyawan.alamat.jalan}, ${karyawan.alamat.kota}, ${karyawan.alamat.provinsi}',
+                      ),
+                      Text('Hobi: ${karyawan.hobi.join(', ')}'),
+                    ],
+                  ),
+                );
+              },
+            );
+          } else {
+            return const Center(child: CircularProgressIndicator());
+          }
+        },
+      ),
     );
   }
 }
