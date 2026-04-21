@@ -2,6 +2,8 @@ import "package:flutter/material.dart";
 import "package:firebase_database/firebase_database.dart";
 import "package:mdp_gold/services/gold_service.dart";
 import 'package:intl/intl.dart';
+import "package:mdp_gold/screens/login_screen.dart";
+import "package:mdp_gold/services/auth_service.dart";
 
 class PriceListScreen extends StatefulWidget {
   const PriceListScreen({super.key});
@@ -12,6 +14,7 @@ class PriceListScreen extends StatefulWidget {
 
 class _PriceListScreenState extends State<PriceListScreen> {
   final GoldService _goldService = GoldService();
+  final AuthService _authService = AuthService();
 
   @override
   Widget build(BuildContext context) {
@@ -20,6 +23,19 @@ class _PriceListScreenState extends State<PriceListScreen> {
         title: Text('Harga Emas'),
         backgroundColor: Colors.blue,
         foregroundColor: Colors.white,
+        actions: [
+          IconButton(
+            onPressed: () async {
+              await _authService.signOut();
+              if (mounted) {
+                Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(builder: (context) => const LoginScreen()),
+                );
+              }
+            },
+            icon: const Icon(Icons.logout),
+          ),
+        ],
       ),
       body: StreamBuilder<DatabaseEvent>(
         stream: _goldService.getPriceList(),

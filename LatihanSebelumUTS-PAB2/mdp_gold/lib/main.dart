@@ -1,7 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/gestures.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
-import 'package:mdp_gold/screens/priceListScreen.dart';
+import 'package:mdp_gold/screens/splash_screen.dart';
+
+class AppScrollBehavior extends MaterialScrollBehavior {
+  @override
+  Set<PointerDeviceKind> get dragDevices => {
+    PointerDeviceKind.touch,
+    PointerDeviceKind.mouse,
+    PointerDeviceKind.trackpad,
+  };
+}
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -15,10 +25,10 @@ class MainApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Harga Emas',
+      scrollBehavior: AppScrollBehavior(),
+      // Menghilangkan banner "DEBUG" di pojok kanan atas
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(colorSchemeSeed: Colors.green, useMaterial3: true),
-      home: const PriceListScreen(),
+      home: const SplashScreen(),
     );
   }
 }
